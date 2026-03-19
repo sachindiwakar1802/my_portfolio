@@ -180,19 +180,29 @@ button {
 
 .title-bar-controls {
   display: flex;
-  gap: 2px;
+  gap: 3px;
+  align-items: center;
+  padding-right: 2px;
+}
+
+.title-bar-controls {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  padding-right: 2px;
 }
 
 .title-bar-button {
-  width: 21px;
-  height: 21px;
-  border: 1px solid white;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(255,255,255,0.7);
   border-radius: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   background: linear-gradient(to bottom, #0058e4 0%, #3b8cf8 100%);
+  box-shadow: inset 1px 1px 1px rgba(255,255,255,0.3);
 }
 
 .title-bar-button.close {
@@ -468,5 +478,68 @@ button {
 
   .taskbar-item span {
     display: none;
+  }
+}
+
+.desktop-name-overlay {
+  position: absolute;
+  bottom: 50px;
+  right: 20px;
+  font-size: 48px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+  font-family: 'Tahoma', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  user-select: none;
+  z-index: 0;
+}
+
+.tray-icon:hover {
+  filter: brightness(1.2);
+}
+
+@media (max-width: 768px) {
+  .desktop-name-overlay {
+    font-size: 24px;
+    bottom: 40px;
+    right: 10px;
+  }
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+@media (max-width: 600px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.about-container {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  background: white;
+}
+
+.about-sidebar {
+  width: 200px !important;
+  background: linear-gradient(to bottom, #7aa2e8, #3b8cf8) !important;
+  color: white;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .about-container {
+    flex-direction: column;
+  }
+  .about-sidebar {
+    display: none !important;
   }
 }

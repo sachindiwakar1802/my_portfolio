@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Monitor, FileText, FolderCode, Youtube, Mail, Github, Linkedin, Search, X, Minus, Square, Music, Paintbrush, Briefcase, Award, GraduationCap, Cpu, Database, Server, Code, HardDrive, Folder } from 'lucide-react';
+import { Monitor, FileText, FolderCode, Youtube, Mail, Github, Linkedin, Search, X, Minus, Square, Music, Paintbrush, Briefcase, Award, GraduationCap, Cpu, Database, Server, Code, HardDrive, Folder, Instagram, MessageCircle, ExternalLink, UserPlus } from 'lucide-react';
+import profileImg from './assets/profile.png';
 import Draggable from 'react-draggable';
 import './App.css';
 
@@ -106,7 +107,18 @@ function App() {
 
   const openWindow = (id, title, Icon, content) => {
     if (!openWindows.find(w => w.id === id)) {
-      const newWindow = { id, title, icon: Icon, content, isMaximized: false, isMinimized: false };
+      const xOffset = openWindows.length * 20;
+      const yOffset = openWindows.length * 20;
+      const newWindow = { 
+        id, 
+        title, 
+        icon: Icon, 
+        content, 
+        isMaximized: false, 
+        isMinimized: false,
+        x: Math.max(0, (window.innerWidth - 600) / 2 + xOffset),
+        y: Math.max(0, (window.innerHeight - 450) / 2 + yOffset)
+      };
       setOpenWindows([...openWindows, newWindow]);
     } else {
       // Unminimize if it's minimized
@@ -178,8 +190,8 @@ function App() {
              style={{ display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer', padding: '10px', borderRadius: '5px', transition: 'background 0.2s' }}
              className="login-account"
            >
-              <div style={{ width: '50px', height: '50px', border: '2px solid white', borderRadius: '4px', overflow: 'hidden' }}>
-                 <img src="https://i.pravatar.cc/150?u=sachin" alt="User" width="100%" />
+              <div style={{ width: '50px', height: '50px', border: '2px solid white', borderRadius: '4px', overflow: 'hidden', background: '#fff' }}>
+                 <img src={profileImg} alt="User" width="100%" />
               </div>
               <div style={{ textAlign: 'left' }}>
                  <div style={{ fontWeight: 'bold', fontSize: '18px' }}>Sachin Diwakar</div>
@@ -201,11 +213,16 @@ function App() {
         <DesktopIcon name="My Projects" icon={FolderCode} onOpen={() => openWindow('projects', 'My Projects', FolderCode, <ProjectsContent />)} initialPos={{x:10, y:280}} />
         <DesktopIcon name="My Resume" icon={FileText} onOpen={() => openWindow('resume', 'My Resume', FileText, <ResumeContent />)} initialPos={{x:10, y:370}} />
         <DesktopIcon name="Contact Me" icon={Mail} onOpen={() => openWindow('contact', 'Contact Me', Mail, <ContactContent />)} initialPos={{x:10, y:460}} />
+        <DesktopIcon name="Hire Me!" icon={UserPlus} onOpen={() => openWindow('hireme', 'Hire Me - Availability', UserPlus, <HireMeContent />)} initialPos={{x:10, y:550}} />
         
         <DesktopIcon name="Media Player" icon={Music} onOpen={() => openWindow('music', 'Media Player', Music, <MusicContent />)} initialPos={{x:100, y:10}} />
         <DesktopIcon name="Paint" icon={Paintbrush} onOpen={() => openWindow('paint', 'Untitled - Paint', Paintbrush, <PaintContent />)} initialPos={{x:100, y:100}} />
         <DesktopIcon name="Notepad" icon={FileText} onOpen={() => openWindow('notepad', 'Untitled - Notepad', FileText, <NotepadContent />)} initialPos={{x:100, y:190}} />
         <DesktopIcon name="YouTube" icon={Youtube} onOpen={() => openWindow('youtube', 'YouTube', Youtube, <YoutubeContent />)} initialPos={{x:100, y:280}} />
+
+        <div className="desktop-name-overlay">
+          Sachin Diwakar
+        </div>
         
         {openWindows.map(w => (
           <Window 
@@ -216,7 +233,7 @@ function App() {
             onClose={closeWindow}
             onMaximize={toggleMaximizeWindow}
             onMinimize={toggleMinimizeWindow}
-            initialPos={{ x: 50 + openWindows.indexOf(w) * 20, y: 50 + openWindows.indexOf(w) * 20 }}
+            initialPos={{ x: w.x, y: w.y }}
           >
             {w.content}
           </Window>
@@ -257,6 +274,9 @@ function App() {
           ))}
         </div>
         <div className="tray">
+          <div className="tray-icon" title="I'm Available for Work!" style={{ marginRight: '10px', color: '#0f0', cursor: 'pointer' }}>
+            <MessageCircle size={14} />
+          </div>
           {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </div>
       </div>
@@ -314,8 +334,9 @@ const StartMenu = ({ isOpen, onClose, onOpenWindow, onLogOff }) => {
         </div>
         <div className="start-menu-right">
            <div className="start-right-item" onClick={() => window.open('https://github.com/Sachin-Diwakar', '_blank')}><Github size={16} /> My GitHub</div>
-           <div className="start-right-item" onClick={() => window.open('https://linkedin.com/in/sachindiwakar', '_blank')}><Linkedin size={16} /> My LinkedIn</div>
+           <div className="start-right-item" onClick={() => window.open('https://www.linkedin.com/in/sachin-diwakar-711204266/', '_blank')}><Linkedin size={16} /> My LinkedIn</div>
            <hr style={{ border: 'none', borderTop: '1px solid #7aa2e8', margin: '10px 0' }} />
+           <div className="start-right-item" onClick={() => window.open('https://www.instagram.com/sachindiwakar1802/', '_blank')}><Instagram size={16} /> Instagram</div>
            <div className="start-right-item">Control Panel</div>
            <div className="start-right-item">Run...</div>
         </div>
@@ -333,10 +354,12 @@ const StartMenu = ({ isOpen, onClose, onOpenWindow, onLogOff }) => {
 };
 
 const AboutContent = () => (
-  <div style={{ display: 'flex', height: '100%', overflow: 'hidden', background: 'white' }}>
-    <div className="window-sidebar" style={{ width: '200px', background: 'linear-gradient(to bottom, #7aa2e8, #3b8cf8)', color: 'white', padding: '20px', overflowY: 'auto' }}>
+  <div className="about-container">
+    <div className="window-sidebar about-sidebar">
       <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-        <div style={{ width: '80px', height: '80px', background: 'white', borderRadius: '50%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px', color: '#3b8cf8' }}>👨‍💻</div>
+        <div style={{ width: '80px', height: '80px', background: 'white', borderRadius: '50%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '2px solid #fff' }}>
+          <img src={profileImg} alt="Sachin" width="100%" />
+        </div>
         <h3 style={{ marginTop: '10px' }}>Sachin Diwakar</h3>
         <p style={{ fontSize: '12px', opacity: 0.9 }}>Full-Stack & Data Engineer</p>
       </div>
@@ -344,9 +367,9 @@ const AboutContent = () => (
       <div style={{ marginBottom: '20px' }}>
         <h4 style={{ borderBottom: '1px solid rgba(255,255,255,0.5)', paddingBottom: '5px', marginBottom: '10px' }}>Contact & Links</h4>
         <div style={{ fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Mail size={14}/> Contact</div>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Linkedin size={14}/> LinkedIn</div>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Github size={14}/> GitHub</div>
+           <a href="mailto:sachindiwakar1802@gmail.com" style={{ color: 'white', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}><Mail size={14}/> Contact</a>
+           <a href="https://www.linkedin.com/in/sachin-diwakar-711204266/" target="_blank" style={{ color: 'white', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}><Linkedin size={14}/> LinkedIn</a>
+           <a href="https://github.com/Sachin-Diwakar" target="_blank" style={{ color: 'white', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}><Github size={14}/> GitHub</a>
         </div>
       </div>
 
@@ -425,7 +448,7 @@ const ProjectsContent = () => {
       </div>
       <div style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
         <h2 style={{ color: '#245edb', margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '10px' }}><FolderCode size={24} /> Featured Projects</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '15px' }}>
+        <div className="projects-grid">
           {projects.map((p, i) => (
             <div key={i} style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '5px', display: 'flex', alignItems: 'flex-start', gap: '15px', cursor: 'pointer', transition: 'background 0.2s', background: 'white' }} onMouseEnter={(e) => e.currentTarget.style.background = '#f5f8ff'} onMouseLeave={(e) => e.currentTarget.style.background = 'white'}>
               <div style={{ padding: '10px', background: '#eef4ff', borderRadius: '8px', color: '#245edb' }}>
@@ -492,7 +515,23 @@ const ContactContent = () => (
   <div style={{ padding: '30px', textAlign: 'center', background: 'white', height: '100%' }}>
     <h2>Get In Touch</h2>
     <p style={{ marginTop: '20px' }}>Feel free to send me an email!</p>
-    <a href="mailto:hello@sachindiwakar.com" style={{ display: 'inline-block', marginTop: '20px', padding: '10px 20px', background: '#0033cc', color: 'white', textDecoration: 'none', borderRadius: '4px' }}>Send Email</a>
+    <a href="mailto:sachindiwakar1802@gmail.com" style={{ display: 'inline-block', marginTop: '20px', padding: '10px 20px', background: '#0033cc', color: 'white', textDecoration: 'none', borderRadius: '4px' }}>Send Email</a>
+  </div>
+);
+
+const HireMeContent = () => (
+  <div style={{ padding: '30px', textAlign: 'center', background: 'white', height: '100%' }}>
+    <div style={{ marginBottom: '20px', fontSize: '48px' }}>🚀</div>
+    <h2 style={{ color: '#245edb' }}>Hire Me!</h2>
+    <p style={{ marginTop: '20px', fontSize: '16px', lineHeight: '1.6' }}>
+      I am currently <strong>available for work</strong> and looking for new opportunities as a 
+      <strong> Full-Stack Developer</strong> or <strong>Data Engineer</strong>.
+    </p>
+    <div style={{ marginTop: '30px', display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center' }}>
+      <a href="mailto:sachindiwakar1802@gmail.com" style={{ width: '200px', padding: '10px', background: '#245edb', color: 'white', textDecoration: 'none', borderRadius: '4px', fontWeight: 'bold' }}>Email Me</a>
+      <a href="https://www.linkedin.com/in/sachin-diwakar-711204266/" target="_blank" style={{ width: '200px', padding: '10px', background: '#0077b5', color: 'white', textDecoration: 'none', borderRadius: '4px', fontWeight: 'bold' }}>LinkedIn Profile</a>
+      <a href="https://wa.me/918700000000" target="_blank" style={{ width: '200px', padding: '10px', background: '#25D366', color: 'white', textDecoration: 'none', borderRadius: '4px', fontWeight: 'bold' }}>WhatsApp Me</a>
+    </div>
   </div>
 );
 
@@ -702,15 +741,23 @@ const SocialMediaContent = () => (
     <div style={{ padding: '30px', background: 'white', height: '100%', overflowY: 'auto', textAlign: 'center' }}>
       <h2 style={{ color: '#245edb', marginBottom: '30px' }}>Connect With Me</h2>
       <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', flexWrap: 'wrap' }}>
-        <a href="https://github.com/Sachin-Diwakar" target="_blank" style={{ textDecoration: 'none', color: '#333', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', borderRadius: '10px', transition: 'transform 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+        <a href="https://github.com/Sachin-Diwakar" target="_blank" style={{ textDecoration: 'none', color: '#333', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', borderRadius: '10px', transition: 'transform 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '120px' }}>
           <Github size={48} />
           <strong style={{ marginTop: '10px' }}>GitHub</strong>
         </a>
-        <a href="https://linkedin.com/in/sachindiwakar" target="_blank" style={{ textDecoration: 'none', color: '#0077b5', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', borderRadius: '10px', transition: 'transform 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+        <a href="https://www.linkedin.com/in/sachin-diwakar-711204266/" target="_blank" style={{ textDecoration: 'none', color: '#0077b5', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', borderRadius: '10px', transition: 'transform 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '120px' }}>
           <Linkedin size={48} />
           <strong style={{ marginTop: '10px' }}>LinkedIn</strong>
         </a>
-        <a href="mailto:hello@sachindiwakar.com" style={{ textDecoration: 'none', color: '#ea4335', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', borderRadius: '10px', transition: 'transform 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+        <a href="https://www.instagram.com/sachindiwakar1802/" target="_blank" style={{ textDecoration: 'none', color: '#e4405f', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', borderRadius: '10px', transition: 'transform 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '120px' }}>
+          <Instagram size={48} />
+          <strong style={{ marginTop: '10px' }}>Instagram</strong>
+        </a>
+        <a href="https://wa.me/918700000000" target="_blank" style={{ textDecoration: 'none', color: '#25D366', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', borderRadius: '10px', transition: 'transform 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '120px' }}>
+          <MessageCircle size={48} />
+          <strong style={{ marginTop: '10px' }}>WhatsApp</strong>
+        </a>
+        <a href="mailto:sachindiwakar1802@gmail.com" style={{ textDecoration: 'none', color: '#ea4335', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', borderRadius: '10px', transition: 'transform 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '120px' }}>
           <Mail size={48} />
           <strong style={{ marginTop: '10px' }}>Email</strong>
         </a>
