@@ -281,7 +281,7 @@ const StartMenu = ({ isOpen, onClose, onOpenWindow, onLogOff }) => {
       <div className="start-menu-header">
         <div className="user-avatar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height:'48px', background:'white', borderRadius:'4px', border:'2px solid rgba(255,255,255,0.7)', fontSize: '28px' }}>👨‍💻</div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span style={{ fontWeight: 'bold', fontSize: '18px', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>Kapil Diwakar</span>
+          <span style={{ fontWeight: 'bold', fontSize: '18px', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>Sachin Diwakar</span>
           <span style={{ fontSize: '12px', opacity: 0.9 }}>Computer Engineer</span>
         </div>
         <img src="https://upload.wikimedia.org/wikipedia/commons/4/42/WinXP_Start_Button.png" height={32} alt="Win" style={{ marginLeft: 'auto', filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.5))' }} />
@@ -334,7 +334,7 @@ const AboutContent = () => (
     <div className="window-sidebar" style={{ width: '200px', background: 'linear-gradient(to bottom, #7aa2e8, #3b8cf8)', color: 'white', padding: '20px', overflowY: 'auto' }}>
       <div style={{ textAlign: 'center', marginBottom: '20px' }}>
         <div style={{ width: '80px', height: '80px', background: 'white', borderRadius: '50%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px', color: '#3b8cf8' }}>👨‍💻</div>
-        <h3 style={{ marginTop: '10px' }}>Kapil Diwakar</h3>
+        <h3 style={{ marginTop: '10px' }}>Sachin Diwakar</h3>
         <p style={{ fontSize: '12px', opacity: 0.9 }}>Full-Stack & Data Engineer</p>
       </div>
       
@@ -418,7 +418,7 @@ const ProjectsContent = () => {
          <div className="toolbar-btn"><FolderCode size={14} /> Folders</div>
       </div>
       <div className="explorer-address" style={{ padding: '5px 10px', background: '#f0f0f0', borderBottom: '1px solid #ccc', fontSize: '12px' }}>
-         <strong>Address:</strong> C:\Users\Kapil\My Projects
+         <strong>Address:</strong> C:\Users\Sachin\My Projects
       </div>
       <div style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
         <h2 style={{ color: '#245edb', margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '10px' }}><FolderCode size={24} /> Featured Projects</h2>
