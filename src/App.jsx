@@ -1,25 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { Monitor, FileText, FolderCode, Youtube, Mail, Github, Linkedin, Search, X, Minus, Square, Music, Paintbrush } from 'lucide-react';
+import { Monitor, FileText, FolderCode, Youtube, Mail, Github, Linkedin, Search, X, Minus, Square, Music, Paintbrush, Briefcase, Award, GraduationCap, Cpu, Database, Server, Code } from 'lucide-react';
 import Draggable from 'react-draggable';
 import './App.css';
 
-const Window = ({ title, icon: Icon, children, onClose, active, onFocus, id, initialPos }) => {
+const Window = ({ title, icon: Icon, children, onClose, active, onFocus, id, initialPos, isMaximized, isMinimized, onMaximize, onMinimize }) => {
   const nodeRef = React.useRef(null);
+  
+  if (isMinimized) return null;
+
+  const maximizedStyle = {
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: 'calc(100% - 30px)',
+    transform: 'translate(0px, 0px)',
+    zIndex: active ? 100 : 10,
+    position: 'absolute'
+  };
+
+  const normalStyle = {
+    zIndex: active ? 100 : 10,
+    width: 'min(600px, 100vw)', 
+    height: 'min(450px, calc(100vh - 30px))', 
+    position: 'absolute' 
+  };
+
   return (
-    <Draggable nodeRef={nodeRef} handle=".title-bar" bounds="parent" defaultPosition={initialPos} onMouseDown={() => onFocus(id)}>
-      <div ref={nodeRef} className={`window ${active ? 'active' : ''}`} style={{ zIndex: active ? 100 : 10, width: '600px', height: '450px', position: 'absolute' }}>
-        <div className="title-bar">
+    <Draggable nodeRef={nodeRef} handle=".title-bar" bounds="parent" defaultPosition={initialPos} onMouseDown={() => onFocus(id)} disabled={isMaximized}>
+      <div ref={nodeRef} className={`window ${active ? 'active' : ''}`} style={isMaximized ? maximizedStyle : normalStyle}>
+        <div className="title-bar" onDoubleClick={() => onMaximize(id)}>
           <div style={{ marginRight: '8px', display: 'flex', alignItems: 'center' }}>
              {Icon && <Icon size={16} />}
           </div>
           <div className="title-bar-text">{title}</div>
           <div className="title-bar-controls">
-            <div className="title-bar-button"><Minus size={12} /></div>
-            <div className="title-bar-button"><Square size={10} /></div>
+            <div className="title-bar-button" onClick={(e) => { e.stopPropagation(); onMinimize(id); }}><Minus size={12} /></div>
+            <div className="title-bar-button" onClick={(e) => { e.stopPropagation(); onMaximize(id); }}><Square size={10} /></div>
             <div className="title-bar-button close" onClick={(e) => { e.stopPropagation(); onClose(id); }}><X size={14} /></div>
           </div>
         </div>
-        <div className="window-content">
+        <div className="window-content" style={{ display: 'block', height: 'calc(100% - 30px)', overflow: 'hidden' }}>
           {children}
         </div>
       </div>
@@ -27,7 +47,8 @@ const Window = ({ title, icon: Icon, children, onClose, active, onFocus, id, ini
   );
 };
 
-const DesktopIcon = ({ name, icon: Icon, onOpen }) => {
+const DesktopIcon = ({ name, icon: Icon, onOpen, initialPos }) => {
+  const nodeRef = React.useRef(null);
   const playHover = () => {
     const audio = new Audio('https://www.winhistory.de/more/winxp/mp3/click.mp3');
     audio.volume = 0.2;
@@ -35,10 +56,12 @@ const DesktopIcon = ({ name, icon: Icon, onOpen }) => {
   };
 
   return (
-    <div className="desktop-icon" onDoubleClick={onOpen} onClick={onOpen} onMouseEnter={playHover}>
-      <Icon size={32} />
-      <span>{name}</span>
-    </div>
+    <Draggable nodeRef={nodeRef} bounds="parent" defaultPosition={initialPos}>
+      <div ref={nodeRef} className="desktop-icon" onDoubleClick={onOpen} onClick={onOpen} onMouseEnter={playHover} style={{ position: 'absolute' }}>
+        <Icon size={32} />
+        <span>{name}</span>
+      </div>
+    </Draggable>
   );
 };
 
@@ -83,8 +106,11 @@ function App() {
 
   const openWindow = (id, title, Icon, content) => {
     if (!openWindows.find(w => w.id === id)) {
-      const newWindow = { id, title, icon: Icon, content };
+      const newWindow = { id, title, icon: Icon, content, isMaximized: false, isMinimized: false };
       setOpenWindows([...openWindows, newWindow]);
+    } else {
+      // Unminimize if it's minimized
+      setOpenWindows(openWindows.map(w => w.id === id ? { ...w, isMinimized: false } : w));
     }
     setActiveWindow(id);
     setIsStartOpen(false);
@@ -96,6 +122,14 @@ function App() {
     if (activeWindow === id) {
       setActiveWindow(newWindows[newWindows.length - 1]?.id || null);
     }
+  };
+
+  const toggleMaximizeWindow = (id) => {
+    setOpenWindows(openWindows.map(w => w.id === id ? { ...w, isMaximized: !w.isMaximized } : w));
+  };
+
+  const toggleMinimizeWindow = (id) => {
+    setOpenWindows(openWindows.map(w => w.id === id ? { ...w, isMinimized: !w.isMinimized } : w));
   };
 
   if (loggingOff) {
@@ -161,14 +195,14 @@ function App() {
   return (
     <div className="xp-container" onClick={() => setIsStartOpen(false)}>
       <div className="desktop">
-        <DesktopIcon name="My Profile" icon={Monitor} onOpen={() => openWindow('about', 'My Profile', Monitor, <AboutContent />)} />
-        <DesktopIcon name="My Projects" icon={FolderCode} onOpen={() => openWindow('projects', 'My Projects', FolderCode, <ProjectsContent />)} />
-        <DesktopIcon name="My Resume" icon={FileText} onOpen={() => openWindow('resume', 'My Resume', FileText, <ResumeContent />)} />
-        <DesktopIcon name="Contact Me" icon={Mail} onOpen={() => openWindow('contact', 'Contact Me', Mail, <ContactContent />)} />
-        <DesktopIcon name="Media Player" icon={Music} onOpen={() => openWindow('music', 'Media Player', Music, <MusicContent />)} />
-        <DesktopIcon name="Paint" icon={Paintbrush} onOpen={() => openWindow('paint', 'Untitled - Paint', Paintbrush, <PaintContent />)} />
-        <DesktopIcon name="Notepad" icon={FileText} onOpen={() => openWindow('notepad', 'Untitled - Notepad', FileText, <NotepadContent />)} />
-        <DesktopIcon name="YouTube" icon={Youtube} onOpen={() => openWindow('youtube', 'YouTube', Youtube, <YoutubeContent />)} />
+        <DesktopIcon name="My Profile" icon={Monitor} onOpen={() => openWindow('about', 'My Profile', Monitor, <AboutContent />)} initialPos={{x:10, y:10}} />
+        <DesktopIcon name="My Projects" icon={FolderCode} onOpen={() => openWindow('projects', 'My Projects', FolderCode, <ProjectsContent />)} initialPos={{x:10, y:100}} />
+        <DesktopIcon name="My Resume" icon={FileText} onOpen={() => openWindow('resume', 'My Resume', FileText, <ResumeContent />)} initialPos={{x:10, y:190}} />
+        <DesktopIcon name="Contact Me" icon={Mail} onOpen={() => openWindow('contact', 'Contact Me', Mail, <ContactContent />)} initialPos={{x:10, y:280}} />
+        <DesktopIcon name="Media Player" icon={Music} onOpen={() => openWindow('music', 'Media Player', Music, <MusicContent />)} initialPos={{x:10, y:370}} />
+        <DesktopIcon name="Paint" icon={Paintbrush} onOpen={() => openWindow('paint', 'Untitled - Paint', Paintbrush, <PaintContent />)} initialPos={{x:100, y:10}} />
+        <DesktopIcon name="Notepad" icon={FileText} onOpen={() => openWindow('notepad', 'Untitled - Notepad', FileText, <NotepadContent />)} initialPos={{x:100, y:100}} />
+        <DesktopIcon name="YouTube" icon={Youtube} onOpen={() => openWindow('youtube', 'YouTube', Youtube, <YoutubeContent />)} initialPos={{x:100, y:190}} />
         
         {openWindows.map(w => (
           <Window 
@@ -177,6 +211,8 @@ function App() {
             active={activeWindow === w.id} 
             onFocus={setActiveWindow} 
             onClose={closeWindow}
+            onMaximize={toggleMaximizeWindow}
+            onMinimize={toggleMinimizeWindow}
             initialPos={{ x: 50 + openWindows.indexOf(w) * 20, y: 50 + openWindows.indexOf(w) * 20 }}
           >
             {w.content}
@@ -200,8 +236,17 @@ function App() {
           {openWindows.map(w => (
             <div 
               key={w.id} 
-              className={`taskbar-item ${activeWindow === w.id ? 'active' : ''}`}
-              onClick={() => setActiveWindow(w.id)}
+              className={`taskbar-item ${activeWindow === w.id && !w.isMinimized ? 'active' : ''}`}
+              onClick={() => {
+                if (w.isMinimized) {
+                  toggleMinimizeWindow(w.id);
+                  setActiveWindow(w.id);
+                } else if (activeWindow === w.id) {
+                  toggleMinimizeWindow(w.id);
+                } else {
+                  setActiveWindow(w.id);
+                }
+              }}
             >
               <w.icon size={14} />
               <span>{w.title}</span>
@@ -234,11 +279,12 @@ const StartMenu = ({ isOpen, onClose, onOpenWindow, onLogOff }) => {
   return (
     <div className="start-menu" onMouseLeave={onClose} onClick={(e) => e.stopPropagation()}>
       <div className="start-menu-header">
-        <div className="user-avatar">SD</div>
+        <div className="user-avatar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height:'48px', background:'white', borderRadius:'4px', border:'2px solid rgba(255,255,255,0.7)', fontSize: '28px' }}>👨‍💻</div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span style={{ fontWeight: 'bold' }}>Sachin Diwakar</span>
-          <span style={{ fontSize: '10px', opacity: 0.8 }}>Professional</span>
+          <span style={{ fontWeight: 'bold', fontSize: '18px', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>Kapil Diwakar</span>
+          <span style={{ fontSize: '12px', opacity: 0.9 }}>Computer Engineer</span>
         </div>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/42/WinXP_Start_Button.png" height={32} alt="Win" style={{ marginLeft: 'auto', filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.5))' }} />
       </div>
       <div className="start-menu-search">
          <Search size={14} style={{ marginLeft: '10px', color: '#666' }} />
@@ -284,37 +330,73 @@ const StartMenu = ({ isOpen, onClose, onOpenWindow, onLogOff }) => {
 };
 
 const AboutContent = () => (
-  <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
-    <div className="window-sidebar">
-      <div className="sidebar-section">
-        <div className="sidebar-header blue">Social Links</div>
-        <div className="sidebar-body">
-          <ul className="sidebar-list">
-             <li><img src="https://img.icons8.com/color/48/instagram-new.png" width={16} alt=""/> Instagram</li>
-             <li><img src="https://img.icons8.com/ios-filled/50/github.png" width={16} alt=""/> GitHub</li>
-             <li><img src="https://img.icons8.com/color/48/linkedin.png" width={16} alt=""/> LinkedIn</li>
-          </ul>
+  <div style={{ display: 'flex', height: '100%', overflow: 'hidden', background: 'white' }}>
+    <div className="window-sidebar" style={{ width: '200px', background: 'linear-gradient(to bottom, #7aa2e8, #3b8cf8)', color: 'white', padding: '20px', overflowY: 'auto' }}>
+      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <div style={{ width: '80px', height: '80px', background: 'white', borderRadius: '50%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px', color: '#3b8cf8' }}>👨‍💻</div>
+        <h3 style={{ marginTop: '10px' }}>Kapil Diwakar</h3>
+        <p style={{ fontSize: '12px', opacity: 0.9 }}>Full-Stack & Data Engineer</p>
+      </div>
+      
+      <div style={{ marginBottom: '20px' }}>
+        <h4 style={{ borderBottom: '1px solid rgba(255,255,255,0.5)', paddingBottom: '5px', marginBottom: '10px' }}>Contact & Links</h4>
+        <div style={{ fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Mail size={14}/> Contact</div>
+           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Linkedin size={14}/> LinkedIn</div>
+           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Github size={14}/> GitHub</div>
         </div>
       </div>
-      <div className="sidebar-section">
-        <div className="sidebar-header blue">Skills</div>
-        <div className="sidebar-body">
-          <ul className="sidebar-list">
-             <li><span style={{ color: 'orange' }}>★</span> UI Design</li>
-             <li><span style={{ color: 'blue' }}>★</span> React Development</li>
-             <li><span style={{ color: 'purple' }}>★</span> AI Integration</li>
-          </ul>
-        </div>
+
+      <div>
+        <h4 style={{ borderBottom: '1px solid rgba(255,255,255,0.5)', paddingBottom: '5px', marginBottom: '10px' }}>Top Skills</h4>
+        <ul style={{ fontSize: '12px', paddingLeft: '15px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+           <li>Node.js, Express, FastAPI</li>
+           <li>React, JS, HTML/CSS</li>
+           <li>MongoDB, MySQL</li>
+           <li>Data Engineering & ETL</li>
+        </ul>
       </div>
     </div>
-    <div style={{ flex: 1, padding: '30px', overflowY: 'auto', background: 'white' }}>
-      <h1 style={{ fontSize: '32px', margin: '0 0 20px 0', color: '#333' }}>About Me</h1>
-      <p style={{ lineHeight: '1.6', fontSize: '14px', color: '#444' }}>
-        I me Sachin Diwakar, a specialized engineer focused on high-performance automation and scalable AI workflows.
-        <br/><br/>
-        My journey started with a passion for digital craftsmanship, building systems that don't just work—they excel.
-        <br/><br/>
-        From architecting neural platforms to engineering real-time analytics, I focus on precision and reliability.
+    
+    <div style={{ flex: 1, padding: '30px', overflowY: 'auto', color: '#333' }}>
+      <h1 style={{ fontSize: '28px', color: '#245edb', borderBottom: '2px solid #245edb', paddingBottom: '10px', marginBottom: '20px' }}>Professional Profile</h1>
+      
+      <p style={{ lineHeight: '1.6', fontSize: '14px', marginBottom: '20px' }}>
+        I am a <strong>full-stack developer</strong> and <strong>data-focused engineer</strong> with a background in Electronics & Communication Engineering. I specialize in building robust backend systems, dynamic frontends, and automated data processing pipelines.
+      </p>
+
+      <h3 style={{ color: '#245edb', display: 'flex', alignItems: 'center', gap: '10px', margin: '25px 0 15px' }}><Briefcase size={20} /> Experience</h3>
+      
+      <div style={{ marginBottom: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <h4 style={{ margin: 0, fontSize: '16px' }}>Research Intern - IIT Delhi</h4>
+          <span style={{ fontSize: '12px', color: '#666', fontWeight: 'bold' }}>📍 Delhi, India</span>
+        </div>
+        <ul style={{ fontSize: '13px', marginTop: '10px', paddingLeft: '20px', lineHeight: '1.5' }}>
+          <li>Developed real-time data pipelines and sensor data acquisition systems.</li>
+          <li>Integrated hardware and software using STM32 microcontrollers and embedded systems.</li>
+        </ul>
+      </div>
+
+      <h3 style={{ color: '#245edb', display: 'flex', alignItems: 'center', gap: '10px', margin: '25px 0 15px' }}><Cpu size={20} /> Technical Arsenal</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', fontSize: '13px' }}>
+        <div>
+          <strong>Backend & APIs:</strong><br/>Node.js, Express, FastAPI, REST integrations
+        </div>
+        <div>
+          <strong>Frontend:</strong><br/>React, HTML, CSS, JavaScript
+        </div>
+        <div>
+          <strong>Data & DB:</strong><br/>MongoDB, MySQL, ETL Pipelines, Web Scraping (Python)
+        </div>
+        <div>
+          <strong>Core CS:</strong><br/>DSA, OOP, DBMS, OS, Computer Networks, Gen AI Basics
+        </div>
+      </div>
+
+      <h3 style={{ color: '#245edb', display: 'flex', alignItems: 'center', gap: '10px', margin: '25px 0 15px' }}><Award size={20} /> Leadership</h3>
+      <p style={{ fontSize: '13px', lineHeight: '1.5' }}>
+        <strong>President of Mental Health Club:</strong> Led a team to organize events and workshops promoting mental well-being, managing end-to-end event execution and cross-functional teams.
       </p>
     </div>
   </div>
@@ -322,54 +404,43 @@ const AboutContent = () => (
 
 const ProjectsContent = () => {
   const projects = [
-    { name: "Global-AI-Assistant", date: "2023-11-12", size: "2.4 MB" },
-    { name: "Finance-Tracker-API", date: "2024-01-05", size: "1.8 MB" },
-    { name: "Portfolio-3D-V1", date: "2024-02-20", size: "5.1 MB" },
-    { name: "Enterprise-Auth-System", date: "2023-09-15", size: "900 KB" },
-    { name: "Scalable-Data-Pipeline", date: "2024-03-01", size: "12.2 MB" },
+    { name: "AI Code Generator", date: "2024-03-10", size: "React, Node, GenAI", icon: Code },
+    { name: "Voice-Controlled Wheelchair", date: "2023-11-20", size: "Embedded C, IoT", icon: Cpu },
+    { name: "Automated ETL Pipeline", date: "2024-01-15", size: "Python, SQL", icon: Database },
+    { name: "Real-time Sensor API", date: "2023-08-05", size: "FastAPI, STM32", icon: Server },
   ];
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', backgroundColor: 'white' }}>
       <div className="explorer-toolbar">
          <div className="toolbar-btn"><span style={{ color: 'green' }}>←</span> Back</div>
-         <div className="toolbar-btn">Forward <span style={{ color: '#999' }}>→</span></div>
-         <div className="toolbar-btn"><Monitor size={14} /> View</div>
+         <div className="toolbar-btn">Search</div>
+         <div className="toolbar-btn"><FolderCode size={14} /> Folders</div>
       </div>
-      <div className="explorer-address">
-         Address: C:\Documents and Settings\Sachin\My Projects
+      <div className="explorer-address" style={{ padding: '5px 10px', background: '#f0f0f0', borderBottom: '1px solid #ccc', fontSize: '12px' }}>
+         <strong>Address:</strong> C:\Users\Kapil\My Projects
       </div>
       <div style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
-        <table className="explorer-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Date Modified</th>
-              <th>Size</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map((p, i) => (
-              <tr key={i}>
-                <td style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <FolderCode size={16} color="#fcd34d" /> {p.name}
-                </td>
-                <td>{p.date}</td>
-                <td>{p.size}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <h2 style={{ color: '#245edb', margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '10px' }}><FolderCode size={24} /> Featured Projects</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '15px' }}>
+          {projects.map((p, i) => (
+            <div key={i} style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '5px', display: 'flex', alignItems: 'flex-start', gap: '15px', cursor: 'pointer', transition: 'background 0.2s', background: 'white' }} onMouseEnter={(e) => e.currentTarget.style.background = '#f5f8ff'} onMouseLeave={(e) => e.currentTarget.style.background = 'white'}>
+              <div style={{ padding: '10px', background: '#eef4ff', borderRadius: '8px', color: '#245edb' }}>
+                <p.icon size={24} />
+              </div>
+              <div>
+                <h4 style={{ margin: '0 0 5px 0', color: '#333' }}>{p.name}</h4>
+                <div style={{ fontSize: '11px', color: '#666', marginBottom: '5px' }}>{p.date}</div>
+                <div style={{ fontSize: '12px', background: '#eee', padding: '2px 6px', borderRadius: '10px', display: 'inline-block' }}>{p.size}</div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
       <style>{`
-        .explorer-toolbar { display: flex; padding: 5px; background: var(--xp-bg-gray); border-bottom: 1px solid #ccc; gap: 10px; }
+        .explorer-toolbar { display: flex; padding: 5px; background: #ece9d8; border-bottom: 1px solid #ccc; gap: 10px; }
         .toolbar-btn { font-size: 11px; padding: 3px 8px; border: 1px solid transparent; cursor: pointer; display: flex; alignItems: center; gap: 5px; }
         .toolbar-btn:hover { border: 1px solid #999; background: #fff; }
-        .explorer-address { padding: 4px 10px; background: white; border-bottom: 1px solid #ccc; font-size: 11px; color: #666; }
-        .explorer-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .explorer-table th { text-align: left; padding: 5px 10px; background: #eee; border: 1px solid #ccc; font-weight: normal; }
-        .explorer-table td { padding: 5px 10px; border-bottom: 1px solid #f0f0f0; }
-        .explorer-table tr:hover { background: #316ac5; color: white; }
       `}</style>
     </div>
   );
