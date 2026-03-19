@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Monitor, FileText, FolderCode, Youtube, Mail, Github, Linkedin, Search, X, Minus, Square, Music, Paintbrush, Briefcase, Award, GraduationCap, Cpu, Database, Server, Code } from 'lucide-react';
+import { Monitor, FileText, FolderCode, Youtube, Mail, Github, Linkedin, Search, X, Minus, Square, Music, Paintbrush, Briefcase, Award, GraduationCap, Cpu, Database, Server, Code, HardDrive, Folder } from 'lucide-react';
 import Draggable from 'react-draggable';
 import './App.css';
 
@@ -195,14 +195,17 @@ function App() {
   return (
     <div className="xp-container" onClick={() => setIsStartOpen(false)}>
       <div className="desktop">
-        <DesktopIcon name="My Profile" icon={Monitor} onOpen={() => openWindow('about', 'My Profile', Monitor, <AboutContent />)} initialPos={{x:10, y:10}} />
-        <DesktopIcon name="My Projects" icon={FolderCode} onOpen={() => openWindow('projects', 'My Projects', FolderCode, <ProjectsContent />)} initialPos={{x:10, y:100}} />
-        <DesktopIcon name="My Resume" icon={FileText} onOpen={() => openWindow('resume', 'My Resume', FileText, <ResumeContent />)} initialPos={{x:10, y:190}} />
-        <DesktopIcon name="Contact Me" icon={Mail} onOpen={() => openWindow('contact', 'Contact Me', Mail, <ContactContent />)} initialPos={{x:10, y:280}} />
-        <DesktopIcon name="Media Player" icon={Music} onOpen={() => openWindow('music', 'Media Player', Music, <MusicContent />)} initialPos={{x:10, y:370}} />
-        <DesktopIcon name="Paint" icon={Paintbrush} onOpen={() => openWindow('paint', 'Untitled - Paint', Paintbrush, <PaintContent />)} initialPos={{x:100, y:10}} />
-        <DesktopIcon name="Notepad" icon={FileText} onOpen={() => openWindow('notepad', 'Untitled - Notepad', FileText, <NotepadContent />)} initialPos={{x:100, y:100}} />
-        <DesktopIcon name="YouTube" icon={Youtube} onOpen={() => openWindow('youtube', 'YouTube', Youtube, <YoutubeContent />)} initialPos={{x:100, y:190}} />
+        <DesktopIcon name="My Computer" icon={HardDrive} onOpen={() => openWindow('mycomputer', 'My Computer', HardDrive, <MyComputerContent onOpenWindow={openWindow} />)} initialPos={{x:10, y:10}} />
+        <DesktopIcon name="Social Media" icon={Github} onOpen={() => openWindow('social', 'Social Media', Github, <SocialMediaContent />)} initialPos={{x:10, y:100}} />
+        <DesktopIcon name="My Profile" icon={Monitor} onOpen={() => openWindow('about', 'My Profile', Monitor, <AboutContent />)} initialPos={{x:10, y:190}} />
+        <DesktopIcon name="My Projects" icon={FolderCode} onOpen={() => openWindow('projects', 'My Projects', FolderCode, <ProjectsContent />)} initialPos={{x:10, y:280}} />
+        <DesktopIcon name="My Resume" icon={FileText} onOpen={() => openWindow('resume', 'My Resume', FileText, <ResumeContent />)} initialPos={{x:10, y:370}} />
+        <DesktopIcon name="Contact Me" icon={Mail} onOpen={() => openWindow('contact', 'Contact Me', Mail, <ContactContent />)} initialPos={{x:10, y:460}} />
+        
+        <DesktopIcon name="Media Player" icon={Music} onOpen={() => openWindow('music', 'Media Player', Music, <MusicContent />)} initialPos={{x:100, y:10}} />
+        <DesktopIcon name="Paint" icon={Paintbrush} onOpen={() => openWindow('paint', 'Untitled - Paint', Paintbrush, <PaintContent />)} initialPos={{x:100, y:100}} />
+        <DesktopIcon name="Notepad" icon={FileText} onOpen={() => openWindow('notepad', 'Untitled - Notepad', FileText, <NotepadContent />)} initialPos={{x:100, y:190}} />
+        <DesktopIcon name="YouTube" icon={Youtube} onOpen={() => openWindow('youtube', 'YouTube', Youtube, <YoutubeContent />)} initialPos={{x:100, y:280}} />
         
         {openWindows.map(w => (
           <Window 
@@ -608,5 +611,111 @@ const PaintContent = () => {
     </div>
   );
 };
+
+const MyComputerContent = ({ onOpenWindow }) => {
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', backgroundColor: 'white' }}>
+      <div className="explorer-toolbar" style={{ display: 'flex', padding: '5px', background: '#ece9d8', borderBottom: '1px solid #ccc', gap: '10px' }}>
+         <div className="toolbar-btn" style={{ fontSize: '11px', padding: '3px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}><span style={{ color: 'green' }}>←</span> Back</div>
+         <div className="toolbar-btn" style={{ fontSize: '11px', padding: '3px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}><Search size={14} /> Search</div>
+         <div className="toolbar-btn" style={{ fontSize: '11px', padding: '3px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}><Folder size={14} /> Folders</div>
+      </div>
+      <div className="explorer-address" style={{ padding: '5px 10px', background: '#f0f0f0', borderBottom: '1px solid #ccc', fontSize: '12px' }}>
+         <strong>Address:</strong> My Computer
+      </div>
+      
+      <div style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
+        <h3 style={{ fontSize: '14px', borderBottom: '1px solid #87b2e8', paddingBottom: '5px', color: '#245edb', marginBottom: '15px' }}>Files Stored on This Computer</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px', marginBottom: '30px' }}>
+           <div className="list-item" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '5px' }} onDoubleClick={() => onOpenWindow('achievements', 'Achievements', Award, <AchievementsContent />)}>
+              <Folder size={32} color="#fcd34d" />
+              <div>
+                 <strong>Achievements</strong>
+              </div>
+           </div>
+           <div className="list-item" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '5px' }} onDoubleClick={() => onOpenWindow('social', 'Social Media', Github, <SocialMediaContent />)}>
+              <Folder size={32} color="#fcd34d" />
+              <div>
+                 <strong>Social Media</strong>
+              </div>
+           </div>
+        </div>
+
+        <h3 style={{ fontSize: '14px', borderBottom: '1px solid #87b2e8', paddingBottom: '5px', color: '#245edb', marginBottom: '15px' }}>Hard Disk Drives</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
+           <div className="list-item" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '5px' }}>
+              <HardDrive size={32} color="#666" />
+              <div>
+                 <strong>Local Disk (C:)</strong>
+                 <div style={{ fontSize: '11px', color: '#666' }}>NTFS</div>
+              </div>
+           </div>
+           <div className="list-item" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '5px' }} onDoubleClick={() => onOpenWindow('projects', 'My Projects', FolderCode, <ProjectsContent />)}>
+              <HardDrive size={32} color="#666" />
+              <div>
+                 <strong>Projects (D:)</strong>
+                 <div style={{ fontSize: '11px', color: '#666' }}>FAT32</div>
+              </div>
+           </div>
+        </div>
+        
+        <h3 style={{ fontSize: '14px', borderBottom: '1px solid #87b2e8', paddingBottom: '5px', color: '#245edb', marginBottom: '15px', marginTop: '30px' }}>Devices with Removable Storage</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
+           <div className="list-item" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '5px' }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#ccc', border: '2px solid #999' }}></div>
+              <div>
+                 <strong>CD Drive (E:)</strong>
+              </div>
+           </div>
+        </div>
+
+      </div>
+      <style>{`
+        .list-item:hover { background: #316ac5; border-radius: 3px; }
+        .list-item:hover strong, .list-item:hover div { color: white !important; }
+      `}</style>
+    </div>
+  );
+};
+
+const AchievementsContent = () => (
+  <div style={{ padding: '30px', background: 'white', height: '100%', overflowY: 'auto' }}>
+    <h1 style={{ color: '#245edb', borderBottom: '2px solid #245edb', paddingBottom: '10px' }}>My Achievements</h1>
+    <ul style={{ listStyleType: 'none', padding: 0, marginTop: '20px' }}>
+      <li style={{ background: '#f5f8ff', padding: '15px', borderLeft: '4px solid #245edb', marginBottom: '15px' }}>
+        <strong><Award size={16} /> President, Mental Health Club</strong>
+        <p style={{ margin: '5px 0 0 0', fontSize: '13px', color: '#444' }}>Led a team to organize massive events, workshops, and promote mental well-being on campus.</p>
+      </li>
+      <li style={{ background: '#f5f8ff', padding: '15px', borderLeft: '4px solid #245edb', marginBottom: '15px' }}>
+        <strong><Award size={16} /> IIT Delhi Research Intern</strong>
+        <p style={{ margin: '5px 0 0 0', fontSize: '13px', color: '#444' }}>Successfully integrated STM32 microcontrollers with real-time data pipelines.</p>
+      </li>
+      <li style={{ background: '#f5f8ff', padding: '15px', borderLeft: '4px solid #245edb', marginBottom: '15px' }}>
+        <strong><Award size={16} /> Data Engineering MVP</strong>
+        <p style={{ margin: '5px 0 0 0', fontSize: '13px', color: '#444' }}>Developed comprehensive ETL scripts outperforming baseline latency standards.</p>
+      </li>
+    </ul>
+  </div>
+);
+
+const SocialMediaContent = () => (
+    <div style={{ padding: '30px', background: 'white', height: '100%', overflowY: 'auto', textAlign: 'center' }}>
+      <h2 style={{ color: '#245edb', marginBottom: '30px' }}>Connect With Me</h2>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', flexWrap: 'wrap' }}>
+        <a href="https://github.com/Sachin-Diwakar" target="_blank" style={{ textDecoration: 'none', color: '#333', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', borderRadius: '10px', transition: 'transform 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+          <Github size={48} />
+          <strong style={{ marginTop: '10px' }}>GitHub</strong>
+        </a>
+        <a href="https://linkedin.com/in/sachindiwakar" target="_blank" style={{ textDecoration: 'none', color: '#0077b5', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', borderRadius: '10px', transition: 'transform 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+          <Linkedin size={48} />
+          <strong style={{ marginTop: '10px' }}>LinkedIn</strong>
+        </a>
+        <a href="mailto:hello@sachindiwakar.com" style={{ textDecoration: 'none', color: '#ea4335', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', borderRadius: '10px', transition: 'transform 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+          <Mail size={48} />
+          <strong style={{ marginTop: '10px' }}>Email</strong>
+        </a>
+      </div>
+    </div>
+);
 
 export default App;
